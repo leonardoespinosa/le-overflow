@@ -1,7 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Question } from './question.model';
 import icons from './icons';
+import { QuestionService } from './question.service';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
     selector: 'app-question-form',
@@ -14,11 +17,24 @@ import icons from './icons';
         small {
             display: block;
         }
-    `]
+    `],
+    providers: [QuestionService, AuthService]
 })
-export class QuestionFormComponent {
+export class QuestionFormComponent implements OnInit {
 
     icons: Object[] = icons;
+
+    constructor(private questionService: QuestionService,
+        private authService: AuthService,
+        private router: Router) {
+
+    }
+
+    ngOnInit() {
+        if (!this.authService.isLoggedIn()) {
+            this.router.navigateByUrl('/signin');
+        }
+    }
 
     getIconVersion(icon: any): any {
         let version;
@@ -37,6 +53,12 @@ export class QuestionFormComponent {
             new Date(),
             form.value.icon
         );
-        console.log(q);
+        this.questionService.addQuestion(q).subscribe((result) => {
+            let questionResponse: any = JSON.parse(result._body);
+            this.router.navigate(['/questions/', questionResponse._id]);
+        }, (err) => {
+            this.authService.handleError(err);
+        });
+        form.resetForm();
     }
 }

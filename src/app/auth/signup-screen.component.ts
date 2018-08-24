@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { AuthService } from './auth.service';
 import { User } from './user.model';
 
 @Component({
@@ -9,6 +10,10 @@ import { User } from './user.model';
 export class SignupScreenComponent implements OnInit {
 
     signupForm: FormGroup;
+
+    constructor(private authService: AuthService) {
+
+    }
 
     ngOnInit() {
         this.signupForm = new FormGroup({
@@ -25,8 +30,13 @@ export class SignupScreenComponent implements OnInit {
             const { name, lastName, email, password, passwordConfirm } = this.signupForm.value;
             if (password == passwordConfirm) {
                 const user = new User(email, password, name, lastName);
+                this.authService.signup(user).subscribe((result) => {
+                    let res = JSON.parse(result._body);
+                    this.authService.login(res);
+                }, (err) => {
+                    this.authService.handleError(err);
+                });
                 this.signupForm.reset();
-                console.log(user);
             }
             else {
                 alert('Las contraseñas no coinciden');
