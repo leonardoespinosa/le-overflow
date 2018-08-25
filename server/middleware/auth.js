@@ -4,18 +4,6 @@ import jwt from 'jsonwebtoken'
 
 const debug = new Debug('le-overflow:auth-middleware')
 
-export const users = [
-    {
-        _id: 123,
-        firstName: 'Leonardo',
-        lastName: 'Espinosa',
-        email: 'leonardo@gmail.com',
-        password: '123456'
-    }
-]
-
-export const findUserByEmail = e => users.find(user => user.email === e)
-
 export const required = (req, res, next) => {
     jwt.verify(req.query.token, secret, (err, token) => {
         if (err) {

@@ -57,11 +57,11 @@ export class AuthService {
         });
     }
 
-    public handleError = (error: any) => {
+    handleError(error: any) {
         const { error: { name }, message } = error;
-        if (name === 'TokenExpiredError') {
+        if ((name !== null && name !== undefined) && name === 'TokenExpiredError') {
             this.showError('Tu sesion ha expirado');
-        } else if (name === 'JsonWebTokenError') {
+        } else if ((name !== null && name !== undefined) && name === 'JsonWebTokenError') {
             this.showError('Ha habido un problema con tu sesion');
         } else {
             this.showError(message || 'Ha ocurrido un error. Intentalo nuevamente.');
